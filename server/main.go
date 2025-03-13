@@ -20,7 +20,9 @@ func (s *Server) Ping(stream pb.Messages_PingServer) error {
 			return err
 		}
 
-		if err := stream.Send(&pb.PingResponse{Message: res.Message}); err != nil {
+		log.Printf("received: %s", res.Message)
+
+		if err := stream.Send(&pb.PingResponse{Message: "pong"}); err != nil {
 			return err
 		}
 	}

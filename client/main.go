@@ -11,14 +11,14 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func LoopPing(ctx context.Context, client pb.MessagesClient, interval time.Duration) error {
+func LoopPing(ctx context.Context, client pb.MessagesClient) error {
 	stream, err := client.Ping(ctx)
 	if err != nil {
 		log.Fatalf("failed to call Ping: %v", err)
 	}
 	defer stream.CloseSend()
 
-	ticker := time.NewTicker(interval)
+	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
 	for range ticker.C {
@@ -39,7 +39,6 @@ func LoopPing(ctx context.Context, client pb.MessagesClient, interval time.Durat
 
 func main() {
 	ctx := context.Background()
-	interval := 1 * time.Second
 
 	conn, err := grpc.NewClient("localhost:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -49,7 +48,7 @@ func main() {
 
 	client := pb.NewMessagesClient(conn)
 
-	if err := LoopPing(ctx, client, interval); err != nil {
+	if err := LoopPing(ctx, client); err != nil {
 		log.Fatalf("failed to loop ping: %v", err)
 	}
 }
